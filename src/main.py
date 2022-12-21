@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 from dotenv import load_dotenv
 import supervisely as sly
@@ -13,6 +14,11 @@ WORKSPACE_ID = int(os.environ["context.workspaceId"])
 
 original_dir = "src/videos/original"
 result_dir = "src/videos/result"
+
+# remove the results directory if it exists
+if os.path.exists(result_dir):
+    rmtree(result_dir)
+os.mkdir(result_dir)
 
 # Create the new project
 project = api.project.create(
