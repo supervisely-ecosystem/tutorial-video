@@ -67,26 +67,26 @@ video_info_list = api.video.get_list(dataset.id)
 # Upload a list of videos by hashe to the another dataset
 hashes, names, metas = [], [], []
 # Create lists of hashes, videos names and meta information for each video
-for video_info in video_info_list:
-    hashes.append(video_info.hash)
+for video in video_info_list:
+    hashes.append(video.hash)
     # It is necessary to upload videos with the same names(extentions) as in src dataset
-    names.append(video_info.name)
-    metas.append({video_info.name: video_info.frame_height})  # optional: you can add metadata
+    names.append(video.name)
+    metas.append({video.name: video.frame_height})  # optional: you can add metadata
 
 # This method helps optimize code because it uses fewer queries to a Supervised database
 new_videos_info = api.video.upload_hashes(dataset_2.id, names, hashes, metas)
 
 
 # Download the video by id to the local path
-save_path = os.path.join(result_dir, f"{penguins_info.name}.mp4")
-api.video.download_path(penguins_info.id, save_path)
+save_path = os.path.join(result_dir, f"{video_info.name}.mp4")
+api.video.download_path(video_info.id, save_path)
 
 
 # Download the frame of the video
 frame_idx = 15
 file_name = "frame.png"
 save_path = os.path.join(result_dir, file_name)
-api.video.frame.download_path(penguins_info.id, frame_idx, save_path)
+api.video.frame.download_path(video_info.id, frame_idx, save_path)
 
 
 # Download the range of video frames as images
@@ -94,4 +94,4 @@ frame_indexes = [5, 10, 20, 30, 45]
 save_paths = [os.path.join(result_dir, f"frame_{idx}.png") for idx in frame_indexes]
 
 # This method uses fewer queries to a Supervised database, helps to optimize your code
-api.video.frame.download_paths(penguins_info.id, frame_indexes, save_paths)
+api.video.frame.download_paths(video_info.id, frame_indexes, save_paths)
