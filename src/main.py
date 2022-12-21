@@ -47,7 +47,7 @@ penguins_info = api.video.upload_hash(dataset_2.id, name, hash)
 
 
 # Upload a list of videos from the directory
-names = ["Penguins.mp4", "Swans.mp4", "Toucan.mp4"]
+names = ["Flamingo.mp4", "Swans.mp4", "Toucan.mp4"]
 paths = [os.path.join(original_dir, name) for name in names]
 
 # This method helps optimize code because it uses fewer queries to a Supervised database

@@ -5,3 +5,4 @@ secret_debug.env
 .idea
 .DS_Store
 __pycache__/
+result/
