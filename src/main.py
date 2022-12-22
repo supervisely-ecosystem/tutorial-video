@@ -106,4 +106,4 @@ print(f"Video (ID: {video_info.id}) successfully removed")
 videos_to_remove = api.video.get_list(dataset.id)
 remove_ids = [video.id for video in videos_to_remove]
 api.video.remove_batch(remove_ids)
-print(f"{len(video_info)} videos successfully removed.")
+print(f"{len(remove_ids)} videos successfully removed.")
