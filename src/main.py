@@ -96,3 +96,14 @@ print(f"{len(frame_indexes)} images has been successfully downloaded to '{save_p
 # Download the range of video frames in RGB NumPy matrix format from the Supervisely platform.
 video_frames_np = api.video.frame.download_nps(video_info.id, frame_indexes)
 print(f"{len(video_frames_np)} video frames downloaded in RGB NumPy matrix.")
+
+# Remove video from the Supervisely platform by id
+api.video.remove(video_info.id)
+print(f"Video (ID: {video_info.id}) successfully removed")
+
+
+# Remove the list of the videos from the Supervisely platform by ids
+videos_to_remove = api.video.get_list(dataset.id)
+remove_ids = [video.id for video in videos_to_remove]
+api.video.remove_batch(remove_ids)
+print(f"{len(video_info)} videos successfully removed.")
