@@ -2,6 +2,7 @@ import os
 from shutil import rmtree
 
 from dotenv import load_dotenv
+from pprint import pprint
 import supervisely as sly
 from supervisely.project.project_type import ProjectType
 
@@ -32,13 +33,11 @@ print(f"Dataset ID: {dataset.id}")
 
 # Upload video from local directory to Supervisely platform.
 path = os.path.join(original_dir, "Penguins.mp4")
-meta = {"my-field-1": "my-value-1", "my-field-2": "my-value-2"}
 
 video = api.video.upload_path(
     dataset.id,
     name="Penguins",
     path=path,
-    meta=meta,  # optional: you can add metadata to video.
 )
 print(f'Video "{video.name}" uploaded to Supervisely platform with ID:{video.id}')
 
@@ -70,6 +69,17 @@ save_path = os.path.join(result_dir, f"{video_info.name}.mp4")
 api.video.download_path(video_info.id, save_path)
 print(f"Video has been successfully downloaded to '{save_path}'")
 
+
+# Get video metadata from file
+video_path = "src/videos/result/Penguins.mp4"
+file_info = sly.video.get_info(save_path)
+pprint(file_info)
+
+
+# Get video metadata from server
+api.video.get_info_by_id
+video_info = api.video.get_info_by_id(video.id)
+print(video_info.file_meta)
 
 # Download frame of video from Supervisely platform as image and save to local directory.
 frame_idx = 15
