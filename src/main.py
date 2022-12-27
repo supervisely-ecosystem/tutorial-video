@@ -77,7 +77,6 @@ pprint(file_info)
 
 
 # Get video metadata from server
-api.video.get_info_by_id
 video_info = api.video.get_info_by_id(video.id)
 print(video_info.file_meta)
 
