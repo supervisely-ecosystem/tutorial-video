@@ -6,8 +6,9 @@ from pprint import pprint
 import supervisely as sly
 from supervisely.project.project_type import ProjectType
 
-load_dotenv("local.env")
-load_dotenv(os.path.expanduser("~/supervisely.env"))
+if sly.is_development():
+    load_dotenv("local.env")
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 
 api = sly.Api()
 
