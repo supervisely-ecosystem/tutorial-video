@@ -6,13 +6,15 @@ In this tutorial we will focus on working with videos using Supervisely SDK.
 
 You will learn how to:
 
-1. [upload one or more videos to Supervisely dataset.](#1-upload-videos-from-local-directory-to-supervisely)
-2. [get information about videos by id or name.](#2-getting-information-about-videos)
-3. [download video from Supervisely.](#3-download-video)
-4. [get video metadata](#4-get-video-metadata)
-5. [download one or more frames of video and save to local directory as images.](#5-download-video-frames-as-images)
-6. [download one or more frames of video as RGB NumPy matrix.](#6-download-video-frames-as-rgb-numpy-matrix)
-7. [remove videos from Supervisely.](#7-remove-videos-from-supervisely)
+1. [upload one or more videos to Supervisely dataset.](#upload-videos-from-local-directory-to-supervisely)
+2. [get information about videos by id or name.](#get-information-about-videos)
+3. [download video from Supervisely.](#download-video)
+4. [get video metadata](#get-video-metadata)
+5. [download one or more frames of video and save to local directory as images.](#download-video-frames-as-images)
+6. [download one or more frames of video as RGB NumPy matrix.](#download-video-frames-as-rgb-numpy-matrix)
+7. [remove videos from Supervisely.](#remove-videos-from-supervisely)
+8. [choose from the available codecs, extensions and containers.](#information-about-available-codecs-extensions-and-containers)
+9. [exract frames from videos correctly using the OpenCV library.](#how-to-exract-frames-from-videos-correctly-using-the-opencv-library)
 
 📗 Everything you need to reproduce [this tutorial is on GitHub](https://github.com/supervisely-ecosystem/tutorial-video): source code and demo data.
 
@@ -39,7 +41,7 @@ code -r .
 **Step 4.** Change workspace ID in `local.env` file by copying the ID from the context menu of the workspace.
 
 ```
-context.workspaceId=654 # ⬅️ change value
+WORKSPACE_ID=654 # ⬅️ change value
 ```
 
 <figure><img src="https://user-images.githubusercontent.com/79905215/209327856-e47fb82b-c207-48fc-bb36-1fe795d45f6f.png" alt=""><figcaption></figcaption></figure>
@@ -60,8 +62,9 @@ import supervisely as sly
 First, we load environment variables with credentials and init API for communicating with Supervisely Instance.
 
 ```python
-load_dotenv("local.env")
-load_dotenv(os.path.expanduser("~/supervisely.env"))
+if sly.is_development():
+    load_dotenv("local.env")
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api()
 ```
 
@@ -109,7 +112,7 @@ print(f"Dataset ID: {dataset.id}")
 # Dataset ID: 53465
 ```
 
-## 1 Upload videos from local directory to Supervisely
+## Upload videos from local directory to Supervisely
 
 ### Upload single video.
 
@@ -159,7 +162,7 @@ print(f"{len(upload_info)} videos successfully uploaded to  Supervisely platform
 
 <figure><img src="https://user-images.githubusercontent.com/79905215/209328566-3e8c95c8-9c0d-4b4c-8cdd-fd11d0cee9bd.png" alt=""><figcaption></figcaption></figure>
 
-## 2 Getting information about videos
+## Get information about videos
 
 ### Single video.
 
@@ -233,7 +236,7 @@ print(f"{len(video_info_list)} videos information received.")
 # 4 videos information received.
 ```
 
-## 3 Download video
+## Download video
 
 Download video from Supervisely to local directory by id.
 **Source code:**
@@ -254,7 +257,7 @@ print(f"Video has been successfully downloaded to '{save_path}'")
 
 <figure><img src="https://user-images.githubusercontent.com/79905215/209328639-f2456969-c171-49ec-b880-590a6fc9de81.png" alt=""><figcaption></figcaption></figure>
 
-## 4 Get video metadata
+## Get video metadata
 
 ### Get video metadata from file
 
@@ -320,7 +323,7 @@ pprint(video_info.file_meta)
 }
 ```
 
-## 5 Download video frames as images
+## Download video frames as images
 
 Download single frame of video as image from Supervisely to local directory.
 
@@ -361,7 +364,7 @@ print(f"{len(frame_indexes)} images has been successfully downloaded to '{save_p
 # 5 images has been successfully downloaded to 'src/videos/result/frame.png'
 ```
 
-## 6 Download video frames as RGB NumPy matrix
+## Download video frames as RGB NumPy matrix
 
 You can also download video frame as RGB NumPy matrix.
 
@@ -394,7 +397,7 @@ print(f"{len(video_frames_np)} video frames downloaded in RGB NumPy matrix.")
 # 5 video frames downloaded as RGB NumPy matrix.
 ```
 
-## 7 Remove videos from Supervisely
+## Remove videos from Supervisely
 
 ### Remove one video.
 
@@ -432,7 +435,7 @@ print(f"{len(videos_to_remove)} videos successfully removed.")
 # 3 videos have been successfully removed.
 ```
 
-### Information about available codecs, extensions, and containers.
+## Information about available codecs, extensions, and containers.
 
 > **Note:**
 > Only basic video codecs are available in the Community Edition, for additional video codecs you can try the Enterprise Edition.
@@ -444,3 +447,30 @@ print(f"{len(videos_to_remove)} videos successfully removed.")
 - codecs: _h264, vp8, vp9_
 
 In the Community Edition, it is recommended to use _vp9, h264_ codecs with _mp4_ container.
+
+
+## How to exract frames from videos correctly using the OpenCV library.
+
+In case you need to exract frames from videos, you should be aware of one important detail of the OpenCV library.
+According to [issue #15499](https://github.com/opencv/opencv/issues/15499), different versions of the OpenCV library have different values of the `CAP_PROP_ORIENTATION_AUTO` flag. This may cause that VideoCapture to ignore video orientation metadata.
+To avoid incorrect extraction of frames from videos, it is recommended to directly define flag `CAP_PROP_ORIENTATION_AUTO`:
+
+```python
+cap = cv2.VideoCapture(filepath)
+
+# set CAP_PROP_ORIENTATION_AUTO flag for VideoCapture
+cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 1)
+
+while cap.isOpened():
+    success, frame = cap.read()
+    if not success:
+        print("Can't receive frame (stream end?). Exiting ...")
+        break
+    # cv2.imshow(f"{frame.shape[:2]}", frame)
+    if cv2.waitKey(1) & 0xFF == ord("q"):
+        break
+
+# Release everything if job is finished
+cap.release()
+# cv2.destroyAllWindows()
+```
